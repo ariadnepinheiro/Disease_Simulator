@@ -11,6 +11,11 @@
 
 from random import randint
 from Disease import Disease
+from tkinter import Tk, Canvas
+from MyWorld import MyWorld
+from Timer import Timer
+from mapper import mapper
+import sys
 
 
 class SimulationPanel:
@@ -45,12 +50,12 @@ class SimulationPanel:
                                   0,
                                   (int(self.__canvas['width']) // 2) * self.__widthScale,
                                   (int(self.__canvas['height']) * self.__heightScale),
-                                  width=2, fill='red')
+                                  width=2, fill='blue')
         self.__canvas.create_line(0,
                                   (int(self.__canvas['height']) // 2) * self.__heightScale,
                                   (int(self.__canvas['width']) * self.__widthScale),
                                   (int(self.__canvas['height']) // 2) * self.__heightScale,
-                                  width=2, fill='red')
+                                  width=2, fill='blue')
 
         # Grid
         for value in range(self.__world.getWidth()):
@@ -59,14 +64,14 @@ class SimulationPanel:
                                       0,
                                       p[0] * self.__widthScale,
                                       (int(self.__canvas['height']) * self.__heightScale),
-                                      width=1, fill='black', dash=(2, 2))
+                                      width=1, fill='white', dash=(2, 2))
         for value in range(self.__world.getHeight()):
             p = self.__wvmap.windowToViewport((0, value))[0]
             self.__canvas.create_line(0,
                                       p[1] * self.__heightScale,
                                       (int(self.__canvas['width']) * self.__widthScale),
                                       p[1] * self.__heightScale,
-                                      width=1, fill='black', dash=(3, 2))
+                                      width=1, fill='white', dash=(3, 2))
 
         # Diseases
         for disease in objs:
@@ -128,7 +133,8 @@ class SimulationPanel:
                  f'DiseasesGrowth={growthConditions.rstrip(";")}\n' \
                  f'Temperature={str(self.__world.getTemp(0))};{str(self.__world.getTemp(1))};' \
                  f'{str(self.__world.getTemp(2))};{str(self.__world.getTemp(3))}'
-        with open('simulation-results.config', 'w') as arq:
+
+        with open('simulation-results.config', 'rw') as arq:
             arq.write(string)
 
     # Toggle animation
@@ -166,3 +172,33 @@ class SimulationPanel:
     def wvmap(self, q):
         self.__wvmap = q
         self.__animation()
+
+
+def main():
+    wsizex = 512
+    wsizey = 512
+    margin = 10
+    root = Tk()
+    root.title("Simulador de Doenças")
+    world = MyWorld()
+
+    # maps the world rectangle onto a viewport of wsizex x wsizey pixels.
+    canvas = Canvas(root, width=wsizex, height=wsizey, background='dark grey')
+    canvas.pack()
+    sp = SimulationPanel(world, canvas)
+    sp.wvmap = mapper([0, 0, world.getWidth() - 1, world.getHeight() - 1],
+                      [margin, margin, wsizex - margin, wsizey - margin], False, False)
+
+    poll = Timer(root, sp.draw, 500)
+    canvas.bind('<Configure>', sp.resize)
+    root.bind('<Escape>', lambda _: root.destroy())
+    root.bind('s', lambda _: poll.stop())
+    root.bind('r', lambda _: poll.restart())
+    root.bind('p', sp.printData)
+    root.bind('<Button -1 >', lambda e: sp.mousePressed(e))
+    poll.run()
+    root.mainloop()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
