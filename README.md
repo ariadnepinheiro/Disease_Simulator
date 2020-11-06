@@ -22,4 +22,4 @@ O Simulador entra em loop, chamando o método act() do objeto MyWorld, para rel
 O Simulador também instancia um objeto World e adiciona dois objetos Actor neste mundo. Em seguida, ele executa uma simulação semelhante. Você pode ver a diferença nos resultados da simulação entre o uso de objetos MyWorld e World. Em seguida, vamos descrever os detalhes de cada classe.
 ________________________________________________
 
-Para esclarecimentos completos, ler os arquivos AD1-PIG.pdf e AD2-PIG.pdf (essa com uso de Tkinter, para criação do ambiente gráfico).
+Para esclarecimentos completos, ler os arquivos AD1-PIG.pdf e AD2-PIG.pdf (essa última com uso de Tkinter, para criação do ambiente gráfico).
